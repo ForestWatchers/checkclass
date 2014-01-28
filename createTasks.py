@@ -192,7 +192,8 @@ def create_app(api_url , api_key, name=None, short_name=None, description=None,\
     info = dict (thumbnail="http://forestwatchers.net/assets/images/imgForestANN.jpg",
                  task_presenter = text, tutorial = text_tutorial)
     data = dict(name = name, short_name = short_name, description = description,
-               hidden = 0, info = info, long_description = long_description)
+               hidden = 0, info = info, long_description = long_description,
+               category_id = 1)
     data = json.dumps(data)
 
     # Checking which apps have been already registered in the DB
@@ -236,96 +237,6 @@ def getLatLon (nameFile):
     maxX = geoTransf[0] + width*geoTransf[1] + height*geoTransf[2]
     maxY = geoTransf[3]
     return width, height, minX, maxX, minY, maxY
-
-#~ def create_task(api_url , api_key, app_id, folder):
-    #~ """
-    #~ Creates tasks for the application
-#~ 
-    #~ :arg integer app_id: Application ID in PyBossa.
-    #~ :returns: Task ID in PyBossa.
-    #~ :rtype: integer
-    #~ """
-    #~ # Process the folder
-    #~ # All the tiles cover the same area, so we only need to open one of them
-    #~ # to compute the bounding boxes for analyzing them lately
-#~ 
-    #~ tile = os.path.join(folder['name'],folder['tiles'][0])
-    #~ dataset = gdal.Open(tile, GA_ReadOnly)
-    #~ print 'Driver: %s' % dataset.GetDriver().ShortName
-    #~ print 'Size is %s x %s y' % (dataset.RasterXSize, dataset.RasterYSize)
-    #~ width  = dataset.RasterXSize
-    #~ height = dataset.RasterYSize
-    #~ print 'Projection is: %s' % dataset.GetProjection()
-#~ 
-    #~ # From http://osgeo-org.1560.n6.nabble.com/get-corner-coordinates-from-gdalopen-td3749527.html
-    #~ gt = dataset.GetGeoTransform()
-    #~ minX = gt[0]
-    #~ minY = gt[3] + width*gt[4] + height*gt[5]
-    #~ maxX = gt[0] + width*gt[1] + height*gt[2]
-    #~ maxY = gt[3]
-    #~ bounds = [minX, minY, maxX, maxY]
-    #~ print 'Bounds: %s' % bounds
-#~ 
-    #~ # Compute the restrictedExtents for the tiles:
-    #~ numTiles = 10
-    #~ x = 0
-    #~ y = 0
-    #~ stepX = ((maxX - minX)/numTiles)
-    #~ stepY = ((maxY - minY)/numTiles)
-    #~ extents = []
-    #~ for x in frange(minX, maxX, stepX ):
-        #~ for y in frange(minY, maxY, stepY):
-            #~ extents.append([x,y, x + stepX, y + stepY])
-#~ 
-    #~ #Create every square
-    #~ sizeSquareX = width / numTiles
-    #~ sizeSquareY = height / numTiles
-    #~ newExtents = []
-    #~ pixelXini = 0
-    #~ i = 0
-    #~ for itemX in range(numTiles):
-        #~ pixelYini = 0
-        #~ for itemY in range(numTiles):
-            #~ i = i + 1
-            #~ outName = '/tmp/imgTemp.tif'
-            #~ cmd = 'gdal_translate -of GTiff -srcwin '+str(pixelXini)+' '+str(pixelYini)+' '+str(sizeSquareX)+' '+str(sizeSquareY)+' '+tile+' '+outName
-            #~ print cmd
-            #~ print ''
-            #~ os.system(cmd)
-            #~ pixelYini = pixelYini + sizeSquareY
-            #~ [widthCut, heightCut, minXcut, maxXcut, minYcut, maxYcut] = getLatLon(outName)
-            #~ print 'Upper Left: ', minXcut, maxYcut
-            #~ print 'Lower Right: ', maxXcut, minYcut
-            #~ print ''
-            #~ newExtents.append([minXcut,minYcut,maxXcut,maxYcut])
-            #~ print i, minXcut,minYcut,maxXcut,maxYcut
-            #~ os.system('rm -rf /tmp/imgTemp.tif')
-        #~ pixelXini = pixelXini + sizeSquareX
-#~ 
-    #~ # Create a task per extent
-    #~ for e in newExtents:
-        #~ # Data for the tasks
-        #~ t    = dict (name = folder['name'].rstrip(),
-                     #~ bounds = bounds,
-                     #~ restrictedExtent = e,
-                     #~ projection = dataset.GetProjection(),
-                     #~ width = width,
-                     #~ height = height,
-                     #~ tiles = folder['tiles']
-                #~ )
-        #~ info = dict (tile=t, question=u'Which is the best tile for this area?')
-        #~ data = dict (app_id = app_id, state = 0, info = info, calibration = 0, priority_0 = 0, n_answers = 15)
-        #~ data = json.dumps(data)
-#~ 
-        #~ # Setting the POST action
-        #~ request = urllib2.Request(api_url + '/api/task' + '?api_key=' + api_key)
-        #~ request.add_data(data)
-        #~ request.add_header('Content-type', 'application/json')
-#~ 
-        #~ # Create the task
-        #~ output = json.loads(urllib2.urlopen(request).read())
-        #~ if (output['id'] == None):
-            #~ return False
 
 def create_task(api_url , api_key, app_id, fileSatellite, fileClass, fileProb):
     """
@@ -450,21 +361,6 @@ def create_task(api_url , api_key, app_id, fileSatellite, fileClass, fileProb):
         if (output['id'] == None):
             return False
 
-#~ def get_tiles(folder):
-    #~ """
-    #~ Gets tiles from a folder
-    #~ 
-    #~ :arg string folder: Dir name that has all the tiles
-    #~ :returns: A list 
-    #~ :rtype: list
-    #~ """
-    #~ struct = dict()
-    #~ for dirname, dirnames, filenames in os.walk(folder):
-        #~ struct['name'] = dirname
-        #~ struct['tiles'] = filenames
-#~ 
-    #~ return struct
-
 
 import sys
 if __name__ == "__main__":
@@ -477,7 +373,6 @@ if __name__ == "__main__":
     parser.add_option("-t", "--template", dest="template", help="PyBossa HTML+JS template for application presenter", metavar="TEMPLATE")
     parser.add_option("-b", "--tutorial", dest="tutorial", help="App tutorial template for application presenter", metavar="TUTORIAL")
     parser.add_option("-g", "--long-description", dest="long_desc", help="Long description for the application", metavar="LONG")
-    #~ parser.add_option("-t", "--tile", dest="tile", help="Folder with the tiles timeline", metavar="TILE")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose")
     # Create App
     parser.add_option("-a", "--create-app", action="store_true",
@@ -535,9 +430,6 @@ if __name__ == "__main__":
         print("Using default long description template: long_description.html")
         options.long_desc = "long_description.html"
 
-    #if not options.tile:
-    #    parser.error("You must supply a folder name with the image")
-
     if not options.fileSatellite:
         parser.error("You must supply a satellite image")
     else:
@@ -570,10 +462,6 @@ if __name__ == "__main__":
                  short_name="checkClassRO",
                  template = options.template, tut = options.tutorial,
                  long_desc = options.long_desc)
-        #~ tile = get_tiles(options.tile)
-        #~ for tile in tiles:
-            #~ create_task(options.api_url, options.api_key, app_id, tile)
-        #~ create_task(options.api_url, options.api_key, app_id, tile)
         create_task(options.api_url, options.api_key, app_id, fileSatellite, fileClass, fileProb)
     if not options.create_app and not options.update_template:
         parser.error("Please check --help or -h for the available options")
