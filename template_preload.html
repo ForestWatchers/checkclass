@@ -134,8 +134,8 @@
 <!-- PyBossa interface -->
 <script>
 // Map Server URL
-var mapfile = "map=/home/forestwatchers/map/timeline2.map";
-var server = "http://forestwatchers.net/cgi-bin/mapserv" + "?" + mapfile;
+var mapfile = "map=/home/eduardo/ForestWatchers/maps/timeline2.map";
+var server = "http://localhost/cgi-bin/mapserv" + "?" + mapfile;
 
 var totalArea = 0;
 // Map options
@@ -212,7 +212,7 @@ function dateFromDay( dateString ){
 //}
 
 function loadUserProgress() {
-    pybossa.userProgress('besttile2', 'http://forestwatchers.net/pybossa').done(function(data){
+    pybossa.userProgress('besttile2', 'http://localhost:5000').done(function(data){
     //pybossa.userProgress('besttile').done(function(data){
         var pct = Math.round((data.done*100)/data.total);
         $("#progress").css("width", pct.toString() +"%");

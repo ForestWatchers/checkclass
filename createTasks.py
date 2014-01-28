@@ -518,7 +518,7 @@ if __name__ == "__main__":
     (options, args) = parser.parse_args()
 
     if not options.api_url:
-        options.api_url = 'http://forestwatchers.net/pybossa'
+        options.api_url = 'http://localhost:5000'
 
     if not options.api_key:
         parser.error("You must supply an API-KEY to create an applicationa and tasks in PyBossa")
