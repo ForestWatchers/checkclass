@@ -164,7 +164,7 @@
                         Brightness:
                     </div>
                     <div class="span3" align="left">
-                        <input type='range' id='bright' min='-150' max='150' value='0' name='brightness'/>
+                        <input type='range' id='bright' min='-150' max='150' value='0' step='10' name='brightness'/>
                     </div>
                 </div>
                 <div class="row">
@@ -172,11 +172,11 @@
                         Contrast:
                     </div>
                     <div class="span3" align="left">
-                        <input type='range' id='contr' min='-1' max='3' value='0' step='any' name='contrast'/>
+                        <input type='range' id='contr' min='-1' max='3' value='0' step='0.5' name='contrast'/>
                     </div>
                 </div>
                 <div class="row" style="padding-top:5px">
-                    <input type="button" id="setFilter" value="Set Filter">
+                    <!-- input type="button" id="setFilter" value="Set Filter" -->
                     <input type="button" id="resetFilter" value="Reset Filter"">
                 </div>
             </div>
@@ -224,9 +224,9 @@
 </script>
 
 <!-- PyBossa interface -->
-<script src="/static/openlayers/OpenLayers.js"></script>
-<!-- script src="/static/js/pixastic.custom.js"></script>
-<script src="/static/openlayerscanvas/lib/OpenLayers.js"></script -->
+<!-- script src="/static/openlayers/OpenLayers.js"></script-->
+<script src="/static/js/pixastic.custom.js"></script>
+<script src="/static/openlayerscanvas/lib/OpenLayers.js"></script>
 <!--script src="http://mustache.github.com/extras/mustache.js"></script-->
 <script src="/static/js/pybossa/pybossa.js" type="text/javascript"></script>
 <script>
@@ -276,7 +276,7 @@
     };
 
     // Brightness and contrast filter by Pixastic
-    /*BrightnessFilter = OpenLayers.Class(OpenLayers.Tile.CanvasFilter, {
+    BrightnessFilter = OpenLayers.Class(OpenLayers.Tile.CanvasFilter, {
         brightness: 0,
         contrast:0,
         
@@ -313,7 +313,7 @@
         CLASS_NAME: "BrightnessFilter"
     });
 
-    var filter = new BrightnessFilter();*/
+    var filter = new BrightnessFilter();
 
     // Map Array for loading the images
     var map = [];
@@ -362,9 +362,9 @@
                 isBaseLayer: true
                },
               {
-                // useCanvas: OpenLayers.Layer.Grid.ONECANVASPERLAYER,
-                // buffer: 1,
-                // canvasFilter: filter,
+                useCanvas: OpenLayers.Layer.Grid.ONECANVASPERLAYER,
+                buffer: 1,
+                canvasFilter: filter,
                 opacity: 1.0
               } );
             vector1 = new OpenLayers.Layer.WMS( "Brazil (political map)", infoserver, 
@@ -466,9 +466,23 @@
             }
 
             // Set contrast filter
-            $("#setFilter").off('click').on('click', function(evt){
-                var brightness = parseInt(bright.value);
-                var contrast = parseFloat(contr.value);
+            //$("#setFilter").off('click').on('click', function(evt){
+            //    var brightness = parseInt(bright.value);
+            //    var contrast = parseFloat(contr.value);
+            //    filter.brightness = brightness;
+            //    filter.contrast = contrast;
+            //    task.map[0].layers[1].redraw();
+            //});
+            $('#bright').on('change', function(){
+                var brightness = parseInt($('#bright').val());
+                var contrast = parseInt($('#contr').val());
+                filter.brightness = brightness;
+                filter.contrast = contrast;
+                task.map[0].layers[1].redraw();
+            });
+            $('#contr').on('change', function(){
+                var brightness = parseInt($('#bright').val());
+                var contrast = parseInt($('#contr').val());
                 filter.brightness = brightness;
                 filter.contrast = contrast;
                 task.map[0].layers[1].redraw();
