@@ -331,6 +331,20 @@
         });
     }
 
+    function applyFilter(task, brightness, contrast) {
+        filter.brightness = brightness;
+        filter.contrast = contrast;
+        task.map[0].layers[1].redraw();
+    }
+
+    function resetFilter(task) {
+        bright.value = 0.0;
+        contr.value = 0.0;
+        filter.brightness = 0.0;
+        filter.contrast = 0.0;
+        task.map[0].layers[1].redraw();
+    }
+
     pybossa.taskLoaded(function(task, deferred){
         if ( !$.isEmptyObject(task) ) {
             task.map = [];
@@ -460,10 +474,14 @@
             $("#map_task_" + task.id).show();
 
             // Here comes the test for Chrome
+            $.browser.chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
             if($.browser.chrome) {
                 console.log("Chrome detected");
                 $("#adjustBright").show();
             }
+
+            // Reset filter (every load for the deferred task)
+            resetFilter(task);
 
             // Set contrast filter
             //$("#setFilter").off('click').on('click', function(evt){
@@ -474,27 +492,30 @@
             //    task.map[0].layers[1].redraw();
             //});
             $('#bright').on('change', function(){
-                var brightness = parseInt($('#bright').val());
-                var contrast = parseInt($('#contr').val());
-                filter.brightness = brightness;
-                filter.contrast = contrast;
-                task.map[0].layers[1].redraw();
+                applyFilter(task, $('#bright').val(), $('#contr').val());
+                //var brightness = parseInt($('#bright').val());
+                //var contrast = parseInt($('#contr').val());
+                //filter.brightness = brightness;
+                //filter.contrast = contrast;
+                //task.map[0].layers[1].redraw();
             });
             $('#contr').on('change', function(){
-                var brightness = parseInt($('#bright').val());
-                var contrast = parseInt($('#contr').val());
-                filter.brightness = brightness;
-                filter.contrast = contrast;
-                task.map[0].layers[1].redraw();
+                applyFilter(task, $('#bright').val(), $('#contr').val());
+                //var brightness = parseInt($('#bright').val());
+                //var contrast = parseInt($('#contr').val());
+                //filter.brightness = brightness;
+                //filter.contrast = contrast;
+                //task.map[0].layers[1].redraw();
             });
 
             // Reset contrast filter
             $("#resetFilter").off('click').on('click', function(evt){
-                bright.value = 0.0;
-                contr.value = 0.0;
-                filter.brightness = 0.0;
-                filter.contrast = 0.0;
-                task.map[0].layers[1].redraw();
+                resetFilter(task);
+                //bright.value = 0.0;
+                //contr.value = 0.0;
+                //filter.brightness = 0.0;
+                //filter.contrast = 0.0;
+                //task.map[0].layers[1].redraw();
             });
 
             // Change polygon to green and enable submit button
