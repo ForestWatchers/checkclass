@@ -1,3 +1,6 @@
+<!-- OpenLayers 3 CSS -->
+<link rel="stylesheet" href="http://ol3js.org/en/master/build/ol.css" type="text/css">
+
 <!-- Fix for Bootstrap css with Google Maps https://github.com/twitter/bootstrap/issues/1552 -->
 <style type="text/css">
     .map_canvas label {
@@ -224,7 +227,9 @@
 </script>
 
 <!-- PyBossa interface -->
-<script src="/static/openlayers/OpenLayers.js"></script>
+<!-- OpenLayers 3 -->
+<script src="http://ol3js.org/en/master/build/ol.js" type="text/javascript"></script>
+<!-- script src="/static/openlayers/OpenLayers.js"></script -->
 <!-- script src="/static/js/pixastic.custom.js"></script>
 <script src="/static/openlayerscanvas/lib/OpenLayers.js"></script -->
 <!--script src="http://mustache.github.com/extras/mustache.js"></script-->
@@ -339,8 +344,10 @@
 
             var lat = task.info.tile.lat;
             var lon = task.info.tile.lon;
-            pointInterestG = new OpenLayers.Geometry.Point(lon, lat);
-            pointInterestL = new OpenLayers.LonLat(lon, lat);
+            //pointInterestG = new OpenLayers.Geometry.Point(lon, lat);
+            //pointInterestL = new OpenLayers.LonLat(lon, lat);
+            pointInterestG = new ol.geom.Point([lon, lat]);
+            pointInterestL = pointInterestG
 
             // Prep maps
             for (i=1;i<=2;i++) {
