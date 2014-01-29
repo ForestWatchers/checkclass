@@ -144,9 +144,8 @@ def update_tasks(api_url, api_key, app='checkClassRO'):
         tasks = json.loads(res)
 
         for t in tasks:
-            t['info']['question']=u'Is this area too cloudy (more than 50% of the tile)?'
-            t['n_answers']=15
-            data = dict(info=t['info'],app_id=t['app_id'],n_answers=t['n_answers'])
+            t['info']['question']=u'Should the selected area be classified as Forest or Non-Forest?'
+            data = dict(info=t['info'],app_id=t['app_id'])
             data = json.dumps(data)
             request = urllib2.Request(api_url + '/api/task/' + str(t['id']) + \
                                       '?api_key=' + api_key)
@@ -175,7 +174,7 @@ def create_app(api_url , api_key, name=None, short_name=None, description=None,\
     :rtype: integer
     """
     print('Creating app')
-    name = u'Correct classification - Rondonia 2011'
+    name = u'Correct classification - Rondônia 2011'
     short_name = u'checkClassRO'
     description = u'Help us to correct the automatic classification for this area'
     # JSON Blob to present the tasks for this app to the users
@@ -347,7 +346,7 @@ def create_task(api_url , api_key, app_id, fileSatellite, fileClass, fileProb):
                      lat = e[2],
                      lon = e[3]
                 )
-        info = dict (tile=t, question=u'Is this area forest or non-forest?')
+        info = dict (tile=t, question=u'Should the selected area be classified as Forest or Non-Forest?')
         data = dict (app_id = app_id, state = 0, info = info, calibration = 0, priority_0 = 0, n_answers = 15)
         data = json.dumps(data)
 

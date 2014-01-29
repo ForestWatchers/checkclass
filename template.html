@@ -126,7 +126,7 @@
 
 <!-- Header of the task -->
 <div class="row">
-  <div class="skeleton span8">
+  <div class="skeleton span10">
     <div id="question">
       <h1>Question</h1>
     </div>
@@ -157,11 +157,11 @@
         <div class="span6">
             <div id="adjustBright" align="center" style="display:none;">
                 <div class="row">
-                    <p>Try to adjust the brightness and contrast of the image!</p>
+                    <p style="font-size:16px;">Try to adjust the brightness and contrast of the image!</p>
                 </div>
                 <div class="row">
                     <div class="span2" align="right">
-                        Brightness:
+                        <font style="font-size:15px;">Brightness:</font>
                     </div>
                     <div class="span3" align="left">
                         <input type='range' id='bright' min='-150' max='150' value='0' step='10' name='brightness'/>
@@ -169,7 +169,7 @@
                 </div>
                 <div class="row">
                     <div class="span2" align="right">
-                        Contrast:
+                        <font style="font-size:15px;">Contrast:</font>
                     </div>
                     <div class="span3" align="left">
                         <input type='range' id='contr' min='-1' max='3' value='0' step='0.5' name='contrast'/>
@@ -177,30 +177,33 @@
                 </div>
                 <div class="row" style="padding-top:5px">
                     <!-- input type="button" id="setFilter" value="Set Filter" -->
-                    <input type="button" id="resetFilter" value="Reset Filter"">
+                    <input type="button" id="resetFilter" value="Reset Filter">
                 </div>
             </div>
         </div>
-        <div class="span3" align="center">
-            <button class="btn btn-large btn-success h3" value="forest" id="btnForest">Forest</button>
-        </div>
-        <div class="span3" align="center">
-            <button class="btn btn-large btn-danger" value="non-forest" id="btnNonForest">Non-forest</button>
-        </div>
-    </div>
-    <br />
-    <div id="areaBtnSubmit" class="row" style="display:none;" align="center">
-        <div class="row" align="center" style="padding-top:10px">
-            <div class="span6"></div>
-            <div class="span6" align="center">
-                <p id="pForest" class="text-center stressText" style="display:none;">You selected: <span style="font-weight: bold; color:#00ff00;">FOREST</span></p>
-                <p id="pNonForest" class="text-center stressText" style="display:none;">You selected: <span style="font-weight: bold; color:#ff0000;">NON-FOREST</span></p>
+        <div class="span6" align="center">
+            <div class="row">
+                <div class="span3" align="center">
+                    <button class="btn btn-large btn-success h3" value="forest" id="btnForest">Forest</button>
+                </div>
+                <div class="span3" align="center">
+                    <button class="btn btn-large btn-danger" value="non-forest" id="btnNonForest">Non-forest</button>
+                </div>
             </div>
-        </div>
-        <div class="row" align="center">
-            <div class="span6"></div>
-            <div class="span6" align="center">
-                <button class="btn btn-large btn-submit btn-primary" value="submit" id="btnSubmit">Submit</button>
+            <div class="row">
+                <div id="areaBtnSubmit" style="display:none;" align="center">
+                    <div class="row" style="margin-left: 0px; padding-top: 10px;">
+                        <div class="span6" align="center">
+                            <p id="pForest" class="text-center stressText" style="display:none;">You selected: <span style="font-weight: bold; color:#00ff00;">FOREST</span></p>
+                            <p id="pNonForest" class="text-center stressText" style="display:none;">You selected: <span style="font-weight: bold; color:#ff0000;">NON-FOREST</span></p>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-left: 0px;">
+                        <div class="span6" align="center">
+                            <button class="btn btn-large btn-submit btn-primary" value="submit" id="btnSubmit">Submit</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -483,8 +486,8 @@
                 $("#adjustBright").show();
             }
 
-            // Reset filter (every load for the deferred task)
-            resetFilter(task);
+            // Reapply filter (every load for the deferred task)
+            applyFilter(task, $('#bright').val(), $('#contr').val());
 
             // Set contrast filter
             //$("#setFilter").off('click').on('click', function(evt){
