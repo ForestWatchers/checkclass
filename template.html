@@ -236,14 +236,19 @@
     var selected_polygon_style_red, selected_polygon_style_blue, bboxSelected
     var selected_polygon_style_blue_green, selected_polygon_style_blue_red
 
-    //var mapfile = "map=/home/forestwatchers/map/maps2012.map"
-    //var infofile = "map=/home/forestwatchers/map/infoshapes.map"
-    //var server = "http://forestwatchers.net/cgi-bin/mapserv?"
+    if(document.domain == 'localhost') {
+        var mapfile = "map=/home/eduardo/ForestWatchers/maps/maps2012.map"
+        var infofile = "map=/home/eduardo/ForestWatchers/maps/infoshapes.map"
+        var server = "http://localhost/cgi-bin/mapserv?"
+        var pybossaServer = "http://localhost:5000"
+    } else {
+        var mapfile = "map=/home/forestwatchers/map/maps2012.map"
+        var infofile = "map=/home/forestwatchers/map/infoshapes.map"
+        var server = "http://forestwatchers.net/cgi-bin/mapserv?"
+        var pybossaServer = "http://forestwatchers.net/pybossa"
+    }
 
-    var mapfile = "map=/home/eduardo/ForestWatchers/maps/maps2012.map"
-    var infofile = "map=/home/eduardo/ForestWatchers/maps/infoshapes.map"
-    //var server = "http://150.163.27.97/cgi-bin/mapserv?"
-    var server = "http://localhost/cgi-bin/mapserv?"
+    var pybossaApp = 'checkClassRO'
 
     var resultserver = server + mapfile
     var infoserver = server + infofile
@@ -319,9 +324,7 @@
     var map = [];
 
     function loadUserProgress() {
-        //pybossa.userProgress('checkClassRO', 'http://forestwatchers.net/pybossa').done(function(data){
-        //pybossa.userProgress('checkClassRO', 'http://150.163.27.97:5000').done(function(data){
-        pybossa.userProgress('checkClassRO', 'http://localhost:5000').done(function(data){
+        pybossa.userProgress(pybossaApp, pybossaServer).done(function(data){
             var pct = Math.round((data.done*100)/data.total);
             $("#progress").css("width", pct.toString() +"%");
             $("#progress").attr("title", pct.toString() + "% completed!");
@@ -541,9 +544,7 @@
             // Submit answer to PyBossa
             $(".btn-submit").off('click').on('click', function(evt){
                 task_id = $("#task-id").text();
-                //pybossa.saveTask( task_id, {'checkClassRO': result}, "http://forestwatchers.net/pybossa").done( function(data) {
-                //pybossa.saveTask( task_id, {'checkClassRO': result}, "http://150.163.27.97:5000").done( function(data) {
-                pybossa.saveTask( task_id, {'checkClassRO': result}, "http://localhost:5000").done( function(data) {
+                pybossa.saveTask( task_id, {pybossaApp: result}, pybossaServer).done( function(data) {
                     $("#map_task_" + task.id).hide();
                     $("#areaBtnSubmit").fadeOut();
                     // Show the feedback div
@@ -561,9 +562,7 @@
         }
     });
 
-    //pybossa.setEndpoint('http://forestwatchers.net/pybossa/');
-    //pybossa.setEndpoint('http://150.163.27.97:5000');
-    pybossa.setEndpoint('http://localhost:5000');
-    pybossa.run('checkClassRO');
+    pybossa.setEndpoint(pybossaServer);
+    pybossa.run(pybossaApp);
 
 </script>
