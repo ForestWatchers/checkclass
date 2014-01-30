@@ -121,6 +121,9 @@
       <a class="close">×</a>
       <strong>Oooops!</strong> Image not found, trying with a new one!</strong>
     </div>
+    <div id="browserSupport" class="alert alert-error" style="display:none;">
+      <font style="font-size: 20px;"><strong>Your browser is not supported!</strong> We are very sorry, but right now we do not support your browser. This application requests a Chrome browser (latest version) with WebGL support enabled.</strong></font>
+    </div>
   </div>
 </div>
 
@@ -150,7 +153,7 @@
 </div>
 
 <!-- Map Canvas -->
-<div id="maps" class="row" align="center"></div>
+<div id="maps" class="row skeleton" align="center"></div>
 <br/>
 <div class="skeleton"align="center">
     <div class="row" align="center">
@@ -213,6 +216,7 @@
     <hr>
     <div id="disqus_thread" class="span12"></div>
 </div>
+
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
     var disqus_shortname = 'forestwatcherscheckclassificationro2011'; // required: replace example with your forum shortname
@@ -233,339 +237,345 @@
 <!--script src="http://mustache.github.com/extras/mustache.js"></script-->
 <script src="/static/js/pybossa/pybossa.js" type="text/javascript"></script>
 <script>
-    var map1, map2, map3, layerBestTile1, layerBestTile2, layerBestTile3, vector1, vector2, vector3;
-    var circleFeature1, circleFeature2, circleFeature3, vectorLayer1, vectorLayer2, vectorLayer3, center1, center2, center3, point
-    var projection, lon, lat, pointInterestG, pointInterestL, sizeSquare
-    var selected_polygon_style_red, selected_polygon_style_blue, bboxSelected
-    var selected_polygon_style_blue_green, selected_polygon_style_blue_red
+    // Get info on the browser
+    var isChrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
+    var hasWebGL = !!window.WebGLRenderingContext;
+    // Executes only if environment is safe
+    if(isChrome && hasWebGL) {
 
-    if(document.domain == 'localhost') {
-        var mapfile = "map=/home/eduardo/ForestWatchers/maps/maps2012.map"
-        var infofile = "map=/home/eduardo/ForestWatchers/maps/infoshapes.map"
-        var server = "http://localhost/cgi-bin/mapserv?"
-        var pybossaServer = "http://localhost:5000"
-    } else {
-        var mapfile = "map=/home/forestwatchers/map/maps2012.map"
-        var infofile = "map=/home/forestwatchers/map/infoshapes.map"
-        var server = "http://forestwatchers.net/cgi-bin/mapserv?"
-        var pybossaServer = "http://forestwatchers.net/pybossa"
-    }
+        var map1, map2, map3, layerBestTile1, layerBestTile2, layerBestTile3, vector1, vector2, vector3;
+        var circleFeature1, circleFeature2, circleFeature3, vectorLayer1, vectorLayer2, vectorLayer3, center1, center2, center3, point
+        var projection, lon, lat, pointInterestG, pointInterestL, sizeSquare
+        var selected_polygon_style_red, selected_polygon_style_blue, bboxSelected
+        var selected_polygon_style_blue_green, selected_polygon_style_blue_red
 
-    var pybossaApp = 'checkClassRO'
+        if(document.domain == 'localhost') {
+            var mapfile = "map=/home/eduardo/ForestWatchers/maps/maps2012.map"
+            var infofile = "map=/home/eduardo/ForestWatchers/maps/infoshapes.map"
+            var server = "http://localhost/cgi-bin/mapserv?"
+            var pybossaServer = "http://localhost:5000"
+        } else {
+            var mapfile = "map=/home/forestwatchers/map/maps2012.map"
+            var infofile = "map=/home/forestwatchers/map/infoshapes.map"
+            var server = "http://forestwatchers.net/cgi-bin/mapserv?"
+            var pybossaServer = "http://forestwatchers.net/pybossa"
+        }
 
-    var resultserver = server + mapfile
-    var infoserver = server + infofile
-    var activeMove = false
-    var initMap1, initMap2, result
+        var pybossaApp = 'checkClassRO'
 
-    /* Red-Blue line styles */
-    sizeSquare = 0.0045
-    selected_polygon_style_red = {
-        strokeWidth: 4,
-        strokeColor: '#ff0000',
-        fillOpacity: 0
-    };
-    selected_polygon_style_blue = {
-        strokeWidth: 4,
-        strokeColor: '#104e8b',
-        fillOpacity: 0
-    };
-    selected_polygon_style_blue_green = {
-        strokeWidth: 4,
-        strokeColor: '#104e8b',
-        fillColor: '#00ff00',
-        fillOpacity: 1
-    };
-    selected_polygon_style_blue_red = {
-        strokeWidth: 4,
-        strokeColor: '#104e8b',
-        fillColor: '#ff0000',
-        fillOpacity: 1
-    };
+        var resultserver = server + mapfile
+        var infoserver = server + infofile
+        var activeMove = false
+        var initMap1, initMap2, result
 
-    // Brightness and contrast filter by Pixastic
-    BrightnessFilter = OpenLayers.Class(OpenLayers.Tile.CanvasFilter, {
-        brightness: 0,
-        contrast:0,
-        
-        process: function(image) {
-            var options = {
-                brightness: this.brightness,
-                contrast: this.contrast
-            };
+        /* Red-Blue line styles */
+        sizeSquare = 0.0045
+        selected_polygon_style_red = {
+            strokeWidth: 4,
+            strokeColor: '#ff0000',
+            fillOpacity: 0
+        };
+        selected_polygon_style_blue = {
+            strokeWidth: 4,
+            strokeColor: '#104e8b',
+            fillOpacity: 0
+        };
+        selected_polygon_style_blue_green = {
+            strokeWidth: 4,
+            strokeColor: '#104e8b',
+            fillColor: '#00ff00',
+            fillOpacity: 1
+        };
+        selected_polygon_style_blue_red = {
+            strokeWidth: 4,
+            strokeColor: '#104e8b',
+            fillColor: '#ff0000',
+            fillOpacity: 1
+        };
+
+        // Brightness and contrast filter by Pixastic
+        BrightnessFilter = OpenLayers.Class(OpenLayers.Tile.CanvasFilter, {
+            brightness: 0,
+            contrast:0,
             
-            // Directly calling 'Pixastic.applyAction' instead of 'Pixastic.process'
-            // Works better in Chromium when using a proxy
-            Pixastic.applyAction(image, image, "brightness", options);
+            process: function(image) {
+                var options = {
+                    brightness: this.brightness,
+                    contrast: this.contrast
+                };
+                
+                // Directly calling 'Pixastic.applyAction' instead of 'Pixastic.process'
+                // Works better in Chromium when using a proxy
+                Pixastic.applyAction(image, image, "brightness", options);
 
-            if (!options.resultCanvas) {
-                // If something went wrong, return the original image
-                return image;
-            } else {
-                return options.resultCanvas;
-            }
-        },
-        
-        supportsAsync: function() {
-            return true;    
-        },
+                if (!options.resultCanvas) {
+                    // If something went wrong, return the original image
+                    return image;
+                } else {
+                    return options.resultCanvas;
+                }
+            },
+            
+            supportsAsync: function() {
+                return true;    
+            },
 
-        getParameters: function() {
-            // These parameters are passed to the web worker script
-            return {
-                brightness: this.brightness,
-                contrast: this.contrast
-            };    
-        },
-        
-        CLASS_NAME: "BrightnessFilter"
-    });
-
-    var filter = new BrightnessFilter();
-
-    // Map Array for loading the images
-    var map = [];
-
-    function loadUserProgress() {
-        pybossa.userProgress(pybossaApp, pybossaServer).done(function(data){
-            var pct = Math.round((data.done*100)/data.total);
-            $("#progress").css("width", pct.toString() +"%");
-            $("#progress").attr("title", pct.toString() + "% completed!");
-            $("#progress").tooltip({'placement': 'top'}); 
-            $("#total").text(data.total);
-            $("#done").text(data.done);
+            getParameters: function() {
+                // These parameters are passed to the web worker script
+                return {
+                    brightness: this.brightness,
+                    contrast: this.contrast
+                };    
+            },
+            
+            CLASS_NAME: "BrightnessFilter"
         });
-    }
 
-    function applyFilter(task, brightness, contrast) {
-        filter.brightness = brightness;
-        filter.contrast = contrast;
-        task.map[0].layers[1].redraw();
-    }
+        var filter = new BrightnessFilter();
 
-    function resetFilter(task) {
-        bright.value = 0.0;
-        contr.value = 0.0;
-        filter.brightness = 0.0;
-        filter.contrast = 0.0;
-        task.map[0].layers[1].redraw();
-    }
+        // Map Array for loading the images
+        var map = [];
 
-    pybossa.taskLoaded(function(task, deferred){
-        if ( !$.isEmptyObject(task) ) {
-            task.map = [];
-            var map_div = $("<div/>", {id:"map_task_" + task.id});
-            $("#maps").prepend(map_div);
-
-            var lat = task.info.tile.lat;
-            var lon = task.info.tile.lon;
-            pointInterestG = new OpenLayers.Geometry.Point(lon, lat);
-            pointInterestL = new OpenLayers.LonLat(lon, lat);
-
-            // Prep maps
-            for (i=1;i<=2;i++) {
-                var elem = $("<div/>", {id: 'elem', 'class': 'skeleton span' + 6});
-                elem.css('padding-bottom', '10px');
-                var map_cnt = $("<div/>", {'class': 'map_cnt'});
-                var map_canvas = $("<div/>", {id: 'map'+i.toString()+'_' + task.id, 'class': 'map_canvas'});
-                map_canvas.css("height", "400px");
-                map_cnt.append(map_canvas);
-                elem.append(map_cnt);
-                $("#map_task_" + task.id).append(elem);
-            }
-
-            /*Map1*/
-            map1 = new OpenLayers.Map( 'map1_' + task.id );
-            layerBestTile1 = new OpenLayers.Layer.WMS( "Sattelite mosaic", resultserver, 
-              {
-                layers: 'annBuild',
-                isBaseLayer: true
-               },
-              {
-                useCanvas: OpenLayers.Layer.Grid.ONECANVASPERLAYER,
-                buffer: 1,
-                canvasFilter: filter,
-                opacity: 1.0
-              } );
-            vector1 = new OpenLayers.Layer.WMS( "Brazil (political map)", infoserver, 
-              {
-                layers: 'shp_brazil',
-                transparent: true
-              }, {
-                opacity: 0.4
-               } );
-            center1 = new OpenLayers.Geometry.Polygon.createRegularPolygon(pointInterestG, sizeSquare, 4, 0);
-            circleFeature1 = new OpenLayers.Feature.Vector(center1);
-            circleFeature1.style = selected_polygon_style_red;
-            vectorLayer1 = new OpenLayers.Layer.Vector("Interest Area");
-            vectorLayer1.addFeatures(circleFeature1);
-            map1.addLayer(vectorLayer1);
-            map1.addLayer(layerBestTile1);
-            map1.addLayer(vector1);
-            map1.setCenter(pointInterestL,13);
-            map1.addControl(new OpenLayers.Control.LayerSwitcher());
-
-            /*Map2*/
-            map2 = new OpenLayers.Map( 'map2_' + task.id );
-            layerBestTile2 = new OpenLayers.Layer.WMS( "ANN classification", resultserver, 
-              {
-                layers: 'annClass',
-                isBaseLayer: true
-               },
-              {
-                opacity: 1.0
-              } );
-            vector2 = new OpenLayers.Layer.WMS( "Brazil (political map)", infoserver, 
-              {
-                layers: 'shp_brazil',
-                transparent: true
-              }, {
-                opacity: 0.4
-               } );
-            center2 = new OpenLayers.Geometry.Polygon.createRegularPolygon(pointInterestG, sizeSquare, 4, 0);
-            circleFeature2 = new OpenLayers.Feature.Vector(center2);
-            circleFeature2.style = selected_polygon_style_blue;
-            vectorLayer2 = new OpenLayers.Layer.Vector("Interest Area");
-            vectorLayer2.addFeatures(circleFeature2);
-            map2.addLayer(vectorLayer2);
-            map2.addLayer(layerBestTile2);
-            map2.addLayer(vector2);
-            map2.setCenter(pointInterestL,13);
-            map2.addControl(new OpenLayers.Control.LayerSwitcher());
-
-            $("#map_task_" + task.id).hide();
-
-            task.map.push(map1);
-            task.map.push(map2);
-
-            // Sync maps
-            task.map[0].events.register("move", task.map[0], function(){
-                if (activeMove) {
-                    return;
-                }
-                activeMove = true;
-                task.map[1].setCenter(task.map[0].getCenter().clone().transform(task.map[0].getProjectionObject(), task.map[1].getProjectionObject()), task.map[0].getZoom());
-                activeMove = false;
+        function loadUserProgress() {
+            pybossa.userProgress(pybossaApp, pybossaServer).done(function(data){
+                var pct = Math.round((data.done*100)/data.total);
+                $("#progress").css("width", pct.toString() +"%");
+                $("#progress").attr("title", pct.toString() + "% completed!");
+                $("#progress").tooltip({'placement': 'top'}); 
+                $("#total").text(data.total);
+                $("#done").text(data.done);
             });
-            task.map[1].events.register("move", task.map[1], function(){
-                if (activeMove) {
-                    return;
-                }
-                activeMove = true;
-                task.map[0].setCenter(task.map[1].getCenter().clone().transform(task.map[1].getProjectionObject(), task.map[0].getProjectionObject()), task.map[1].getZoom());
-                activeMove = false;
-            });
-
-            deferred.resolve(task);
         }
-        else {
-            deferred.resolve(task);
+
+        function applyFilter(task, brightness, contrast) {
+            filter.brightness = brightness;
+            filter.contrast = contrast;
+            task.map[0].layers[1].redraw();
         }
-    });
 
-    pybossa.presentTask(function(task, deferred){
-        if ( !$.isEmptyObject(task) ) {
+        function resetFilter(task) {
+            bright.value = 0.0;
+            contr.value = 0.0;
+            filter.brightness = 0.0;
+            filter.contrast = 0.0;
+            task.map[0].layers[1].redraw();
+        }
 
-            if (task.state=='completed') {
-                $('#controls').hide();
-                $('#answer').hide();
-                $('#disqus_thread').hide();
-                $('#taskcompleted').show();
-            }
+        pybossa.taskLoaded(function(task, deferred){
+            if ( !$.isEmptyObject(task) ) {
+                task.map = [];
+                var map_div = $("<div/>", {id:"map_task_" + task.id});
+                $("#maps").prepend(map_div);
 
-            $("#question h1").text(task.info.question);
-            loadUserProgress();
-            $("#task-id").text(task.id);
+                var lat = task.info.tile.lat;
+                var lon = task.info.tile.lon;
+                pointInterestG = new OpenLayers.Geometry.Point(lon, lat);
+                pointInterestL = new OpenLayers.LonLat(lon, lat);
 
-            $("#map_task_" + task.id).show();
+                // Prep maps
+                for (i=1;i<=2;i++) {
+                    var elem = $("<div/>", {id: 'elem', 'class': 'skeleton span' + 6});
+                    elem.css('padding-bottom', '10px');
+                    var map_cnt = $("<div/>", {'class': 'map_cnt'});
+                    var map_canvas = $("<div/>", {id: 'map'+i.toString()+'_' + task.id, 'class': 'map_canvas'});
+                    map_canvas.css("height", "400px");
+                    map_cnt.append(map_canvas);
+                    elem.append(map_cnt);
+                    $("#map_task_" + task.id).append(elem);
+                }
 
-            // Here comes the test for Chrome
-            $.browser.chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
-            if($.browser.chrome) {
-                console.log("Chrome detected");
-                $("#adjustBright").show();
-            }
+                /*Map1*/
+                map1 = new OpenLayers.Map( 'map1_' + task.id );
+                layerBestTile1 = new OpenLayers.Layer.WMS( "Sattelite mosaic", resultserver, 
+                  {
+                    layers: 'annBuild',
+                    isBaseLayer: true
+                   },
+                  {
+                    useCanvas: OpenLayers.Layer.Grid.ONECANVASPERLAYER,
+                    buffer: 1,
+                    canvasFilter: filter,
+                    opacity: 1.0
+                  } );
+                vector1 = new OpenLayers.Layer.WMS( "Brazil (political map)", infoserver, 
+                  {
+                    layers: 'shp_brazil',
+                    transparent: true
+                  }, {
+                    opacity: 0.4
+                   } );
+                center1 = new OpenLayers.Geometry.Polygon.createRegularPolygon(pointInterestG, sizeSquare, 4, 0);
+                circleFeature1 = new OpenLayers.Feature.Vector(center1);
+                circleFeature1.style = selected_polygon_style_red;
+                vectorLayer1 = new OpenLayers.Layer.Vector("Interest Area");
+                vectorLayer1.addFeatures(circleFeature1);
+                map1.addLayer(vectorLayer1);
+                map1.addLayer(layerBestTile1);
+                map1.addLayer(vector1);
+                map1.setCenter(pointInterestL,13);
+                map1.addControl(new OpenLayers.Control.LayerSwitcher());
 
-            // Reapply filter (every load for the deferred task)
-            applyFilter(task, $('#bright').val(), $('#contr').val());
+                /*Map2*/
+                map2 = new OpenLayers.Map( 'map2_' + task.id );
+                layerBestTile2 = new OpenLayers.Layer.WMS( "ANN classification", resultserver, 
+                  {
+                    layers: 'annClass',
+                    isBaseLayer: true
+                   },
+                  {
+                    opacity: 1.0
+                  } );
+                vector2 = new OpenLayers.Layer.WMS( "Brazil (political map)", infoserver, 
+                  {
+                    layers: 'shp_brazil',
+                    transparent: true
+                  }, {
+                    opacity: 0.4
+                   } );
+                center2 = new OpenLayers.Geometry.Polygon.createRegularPolygon(pointInterestG, sizeSquare, 4, 0);
+                circleFeature2 = new OpenLayers.Feature.Vector(center2);
+                circleFeature2.style = selected_polygon_style_blue;
+                vectorLayer2 = new OpenLayers.Layer.Vector("Interest Area");
+                vectorLayer2.addFeatures(circleFeature2);
+                map2.addLayer(vectorLayer2);
+                map2.addLayer(layerBestTile2);
+                map2.addLayer(vector2);
+                map2.setCenter(pointInterestL,13);
+                map2.addControl(new OpenLayers.Control.LayerSwitcher());
 
-            // Set contrast filter
-            //$("#setFilter").off('click').on('click', function(evt){
-            //    var brightness = parseInt(bright.value);
-            //    var contrast = parseFloat(contr.value);
-            //    filter.brightness = brightness;
-            //    filter.contrast = contrast;
-            //    task.map[0].layers[1].redraw();
-            //});
-            $('#bright').on('change', function(){
-                applyFilter(task, $('#bright').val(), $('#contr').val());
-                //var brightness = parseInt($('#bright').val());
-                //var contrast = parseInt($('#contr').val());
-                //filter.brightness = brightness;
-                //filter.contrast = contrast;
-                //task.map[0].layers[1].redraw();
-            });
-            $('#contr').on('change', function(){
-                applyFilter(task, $('#bright').val(), $('#contr').val());
-                //var brightness = parseInt($('#bright').val());
-                //var contrast = parseInt($('#contr').val());
-                //filter.brightness = brightness;
-                //filter.contrast = contrast;
-                //task.map[0].layers[1].redraw();
-            });
+                $("#map_task_" + task.id).hide();
 
-            // Reset contrast filter
-            $("#resetFilter").off('click').on('click', function(evt){
-                resetFilter(task);
-                //bright.value = 0.0;
-                //contr.value = 0.0;
-                //filter.brightness = 0.0;
-                //filter.contrast = 0.0;
-                //task.map[0].layers[1].redraw();
-            });
+                task.map.push(map1);
+                task.map.push(map2);
 
-            // Change polygon to green and enable submit button
-            $("#btnForest").off('click').on('click', function(evt){
-                task.map[1].layers[0].features[0].style = selected_polygon_style_blue_green;
-                task.map[1].layers[0].redraw();
-                result = 1;
-                $("#areaBtnSubmit").fadeIn();
-                $("#pForest").show();
-                $("#pNonForest").hide();
-            });
-
-            // Change polygon to red and enable submit button
-            $("#btnNonForest").off('click').on('click', function(evt){
-                task.map[1].layers[0].features[0].style = selected_polygon_style_blue_red;
-                task.map[1].layers[0].redraw();
-                result = 2;
-                $("#areaBtnSubmit").fadeIn();
-                $("#pForest").hide();
-                $("#pNonForest").show();
-            });
-
-            // Submit answer to PyBossa
-            $(".btn-submit").off('click').on('click', function(evt){
-                task_id = $("#task-id").text();
-                pybossa.saveTask( task_id, {pybossaApp: result}, pybossaServer).done( function(data) {
-                    $("#map_task_" + task.id).hide();
-                    $("#areaBtnSubmit").fadeOut();
-                    // Show the feedback div
-                    $("#success").fadeIn();
-                    // Fade out the pop-up after a 1000 miliseconds
-                    setTimeout(function() { $("#success").fadeOut() }, 1000);
-                    deferred.resolve();
+                // Sync maps
+                task.map[0].events.register("move", task.map[0], function(){
+                    if (activeMove) {
+                        return;
+                    }
+                    activeMove = true;
+                    task.map[1].setCenter(task.map[0].getCenter().clone().transform(task.map[0].getProjectionObject(), task.map[1].getProjectionObject()), task.map[0].getZoom());
+                    activeMove = false;
                 });
-            });
+                task.map[1].events.register("move", task.map[1], function(){
+                    if (activeMove) {
+                        return;
+                    }
+                    activeMove = true;
+                    task.map[0].setCenter(task.map[1].getCenter().clone().transform(task.map[1].getProjectionObject(), task.map[0].getProjectionObject()), task.map[1].getZoom());
+                    activeMove = false;
+                });
 
-        }
-        else {
-            $(".skeleton").hide();
-            $("#finish").fadeIn();
-        }
-    });
+                deferred.resolve(task);
+            } else {
+                deferred.resolve(task);
+            }
+        });
 
-    pybossa.setEndpoint(pybossaServer);
-    pybossa.run(pybossaApp);
+        pybossa.presentTask(function(task, deferred){
+            if ( !$.isEmptyObject(task) ) {
+
+                if (task.state=='completed') {
+                    $('#controls').hide();
+                    $('#answer').hide();
+                    $('#disqus_thread').hide();
+                    $('#taskcompleted').show();
+                }
+
+                $("#question h1").text(task.info.question);
+                loadUserProgress();
+                $("#task-id").text(task.id);
+
+                $("#map_task_" + task.id).show();
+
+                $("#adjustBright").show();
+
+                // Reapply filter (every load for the deferred task)
+                applyFilter(task, $('#bright').val(), $('#contr').val());
+
+                // Set contrast filter
+                //$("#setFilter").off('click').on('click', function(evt){
+                //    var brightness = parseInt(bright.value);
+                //    var contrast = parseFloat(contr.value);
+                //    filter.brightness = brightness;
+                //    filter.contrast = contrast;
+                //    task.map[0].layers[1].redraw();
+                //});
+                $('#bright').on('change', function(){
+                    applyFilter(task, $('#bright').val(), $('#contr').val());
+                    //var brightness = parseInt($('#bright').val());
+                    //var contrast = parseInt($('#contr').val());
+                    //filter.brightness = brightness;
+                    //filter.contrast = contrast;
+                    //task.map[0].layers[1].redraw();
+                });
+                $('#contr').on('change', function(){
+                    applyFilter(task, $('#bright').val(), $('#contr').val());
+                    //var brightness = parseInt($('#bright').val());
+                    //var contrast = parseInt($('#contr').val());
+                    //filter.brightness = brightness;
+                    //filter.contrast = contrast;
+                    //task.map[0].layers[1].redraw();
+                });
+
+                // Reset contrast filter
+                $("#resetFilter").off('click').on('click', function(evt){
+                    resetFilter(task);
+                    //bright.value = 0.0;
+                    //contr.value = 0.0;
+                    //filter.brightness = 0.0;
+                    //filter.contrast = 0.0;
+                    //task.map[0].layers[1].redraw();
+                });
+
+                // Change polygon to green and enable submit button
+                $("#btnForest").off('click').on('click', function(evt){
+                    task.map[1].layers[0].features[0].style = selected_polygon_style_blue_green;
+                    task.map[1].layers[0].redraw();
+                    result = 1;
+                    $("#areaBtnSubmit").fadeIn();
+                    $("#pForest").show();
+                    $("#pNonForest").hide();
+                });
+
+                // Change polygon to red and enable submit button
+                $("#btnNonForest").off('click').on('click', function(evt){
+                    task.map[1].layers[0].features[0].style = selected_polygon_style_blue_red;
+                    task.map[1].layers[0].redraw();
+                    result = 2;
+                    $("#areaBtnSubmit").fadeIn();
+                    $("#pForest").hide();
+                    $("#pNonForest").show();
+                });
+
+                // Submit answer to PyBossa
+                $(".btn-submit").off('click').on('click', function(evt){
+                    task_id = $("#task-id").text();
+                    pybossa.saveTask( task_id, {pybossaApp: result}, pybossaServer).done( function(data) {
+                        $("#map_task_" + task.id).hide();
+                        $("#areaBtnSubmit").fadeOut();
+                        // Show the feedback div
+                        $("#success").fadeIn();
+                        // Fade out the pop-up after a 1000 miliseconds
+                        setTimeout(function() { $("#success").fadeOut() }, 1000);
+                        deferred.resolve();
+                    });
+                });
+
+            } else {
+                $(".skeleton").hide();
+                $("#finish").fadeIn();
+            };
+        });
+
+        pybossa.setEndpoint(pybossaServer);
+        pybossa.run(pybossaApp);
+
+    // If the browser is not supported
+    } else {
+        $(".skeleton").hide();
+        $('#disqus_thread').hide();
+        $('#browserSupport').show();
+    }
 
 </script>
