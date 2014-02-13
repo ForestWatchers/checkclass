@@ -11,17 +11,17 @@
                 <h3>Tutorial</h3>
             </div>
             <div id="0" class="modal-body" style="display:none">
-               <img src="http://forestwatchers.net/assets/images/imgForestANN.jpg" class="img-polaroid" style="width:20%; display: block; margin-left: auto; margin-right: auto"/>
+               <img src="http://imageshack.com/a/img163/6130/k13e.png" class="img-polaroid" style="width:20%; display: block; margin-left: auto; margin-right: auto" />
                <p>Welcome to <strong>ForestWatchers</strong>' new application. It is easy to contribute!</p>
-               <p>On the satellite image on the left, examine carefuly the pixels inside the red square. Is this a <span style="font-weight: bold; color:#00ff00;">Forest</span> or a <span style="font-weight: bold; color:#ff0000;">Non-Forest</span> area?</p>
+               <p>On the satellite image on the left, examine carefuly the pixels inside the red square. Do they correspond to a <span style="font-weight: bold; color:#00ff00;">Forest</span> or a <span style="font-weight: bold; color:#ff0000;">Non-Forest</span> area?</p>
                <img src="http://imageshack.com/a/img31/3450/8atd.png" class="img-polaroid" style="width:85%; display: block; margin-left: auto; margin-right: auto"/>
             </div>
             <div id="1" class="modal-body" style="display:none">
-                <p>Now compare with the automatic classification result, inside the blue box on the image on the right. Do you agree?</p>
+                <p>Now compare with the automatic classification result inside the blue box on the image on the right. Do you agree with the classification results? Remember, green is for <span style="font-weight: bold; color:#00ff00;">Forest</span> and red for <span style="font-weight: bold; color:#ff0000;">Non-Forest</span>.</p>
                 <img src="http://imageshack.com/a/img856/7092/2msd.png" class="img-polaroid" style="width:85%; display: block; margin-left: auto; margin-right: auto"/>
             </div>
             <div id="2" class="modal-body" style="display:none">
-                <p>Click on the appropriate choice below the right classification image, to confirm or to correct the original result.</p>
+                <p>Click on the appropriate choice below the right image to confirm or to correct the classification result.</p>
                 <img src="http://imageshack.com/a/img607/6711/nw1q.png" class="img-polaroid" style="width:85%; display: block; margin-left: auto; margin-right: auto"/>
             </div>
             <div id="3" class="modal-body" style="display:none">
@@ -30,13 +30,13 @@
             </div>
             <div id="4" class="modal-body" style="display:none">
                 <p>Thanks for contributing!</p>
-                <p>You'll automatically receive a new similar task to perform until you complete the number of tasks assigned to a volunteer.</p>
-                <p>Once all tasks have been completed a new and corrected deforestation map for the State of Rondônia, Brazil, will be available on line.</p>
+                <p>You'll automatically receive a new similar task to perform until you complete the number of tasks assigned to each volunteer.</p>
+                <p>Once all tasks have been completed by all volunteers, a new deforestation map for the State of Rondônia in Brazil will be available on line.</p>
                 <img src="http://imageshack.com/a/img841/7231/vxx2.png" class="img-polaroid" style="width:50%; display: block; margin-left: auto; margin-right: auto"/>
             </div>
             <div id="5" class="modal-body" style="display:none">
-                <p><span class="label label-warning"><i class="icon-bullhorn"></i> Tip: </span></p>
-                <p>You might want to facilitate your task by zooming in or out or adjust the contrast and brightness settings on the satellite image on the left.</p>
+                <p><span class="label label-warning" style="font-size: 16px;"><i class="icon-bullhorn"></i> Tip: </span></p>
+                <p>You might want to facilitate your task by zooming in or out or by adjusting the contrast and brightness settings.</p>
                 <img src="http://imageshack.com/a/img716/3505/6upi.png" class="img-polaroid" style="width:60%; display: block; margin-left: auto; margin-right: auto"/>
             </div>
 
@@ -63,6 +63,7 @@
         }
         else {
             $("#prevBtn").show();
+            $("#nextBtn").show();
         }
 
         if (step == 5 ) {
