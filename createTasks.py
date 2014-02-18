@@ -69,7 +69,7 @@ def update_app(api_url , api_key, id, name = None):
     else:
         return False
 
-def update_template(api_url, api_key, app='checkClassRO'):
+def update_template(api_url, api_key, app='checkClassAwa'):
     """
     Update tasks template and long description for the application
 
@@ -120,7 +120,7 @@ def update_template(api_url, api_key, app='checkClassRO'):
     else:
         return False
 
-def update_tasks(api_url, api_key, app='checkClassRO'):
+def update_tasks(api_url, api_key, app='checkClassAwa'):
     """
     Update tasks question 
 
@@ -174,9 +174,9 @@ def create_app(api_url , api_key, name=None, short_name=None, description=None,\
     :rtype: integer
     """
     print('Creating app')
-    name = u'Correct classification - Rondônia 2011'
-    short_name = u'checkClassRO'
-    description = u'Help us to correct the automatic classification for this area'
+    name = u'Correct classification - Awá-Guajá- 2014'
+    short_name = u'checkClassAwa'
+    description = u'Help us to correct the automatic classification for the Awá-Guajá area'
     # JSON Blob to present the tasks for this app to the users
     # First we read the template:
     file = open(template)
@@ -188,7 +188,7 @@ def create_app(api_url , api_key, name=None, short_name=None, description=None,\
     file = open(long_desc)
     long_description = file.read()
     file.close()
-    info = dict (thumbnail="http://forestwatchers.net/assets/images/imgForestANN.jpg",
+    info = dict (thumbnail="http://imageshack.com/a/img600/9343/sjwh.jpg",
                  task_presenter = text, tutorial = text_tutorial)
     data = dict(name = name, short_name = short_name, description = description,
                hidden = 0, info = info, long_description = long_description,
@@ -347,7 +347,7 @@ def create_task(api_url , api_key, app_id, fileSatellite, fileClass, fileProb):
                      lon = e[3]
                 )
         info = dict (tile=t, question=u'Should the selected area be classified as Forest or Non-Forest?')
-        data = dict (app_id = app_id, state = 0, info = info, calibration = 0, priority_0 = 0, n_answers = 15)
+        data = dict (app_id = app_id, state = 0, info = info, calibration = 0, priority_0 = 0, n_answers = 30)
         data = json.dumps(data)
 
         # Setting the POST action
@@ -458,7 +458,7 @@ if __name__ == "__main__":
 
     if options.create_app:
         app_id = create_app(options.api_url, options.api_key,\
-                 short_name="checkClassRO",
+                 short_name="checkClassAwa",
                  template = options.template, tut = options.tutorial,
                  long_desc = options.long_desc)
         create_task(options.api_url, options.api_key, app_id, fileSatellite, fileClass, fileProb)

@@ -219,7 +219,7 @@
 
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-    var disqus_shortname = 'forestwatcherscheckclassificationro2011'; // required: replace example with your forum shortname
+    var disqus_shortname = 'forestwatcherscheckclassificationawaguaja'; // required: replace example with your forum shortname
     //var disqus_developer = 1;
 
     /* * * DON'T EDIT BELOW THIS LINE * * */
@@ -261,7 +261,7 @@
             var pybossaServer = "http://forestwatchers.net/pybossa"
         }
 
-        var pybossaApp = 'checkClassRO'
+        var pybossaApp = 'checkClassAwa'
 
         var resultserver = server + mapfile
         var infoserver = server + infofile
@@ -386,9 +386,9 @@
 
                 /*Map1*/
                 map1 = new OpenLayers.Map( 'map1_' + task.id );
-                layerBestTile1 = new OpenLayers.Layer.WMS( "Sattelite mosaic", resultserver, 
+                layerBestTile1 = new OpenLayers.Layer.WMS( "Sattelite image", resultserver, 
                   {
-                    layers: 'annBuild',
+                    layers: 'awaSat',
                     isBaseLayer: true
                    },
                   {
@@ -419,7 +419,7 @@
                 map2 = new OpenLayers.Map( 'map2_' + task.id );
                 layerBestTile2 = new OpenLayers.Layer.WMS( "ANN classification", resultserver, 
                   {
-                    layers: 'annClass',
+                    layers: 'annClassAwa',
                     isBaseLayer: true
                    },
                   {
