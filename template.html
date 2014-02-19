@@ -404,6 +404,13 @@
                   }, {
                     opacity: 0.4
                    } );
+                vector1a = new OpenLayers.Layer.WMS( "Awá-Guajá Area", infoserver, 
+                  {
+                    layers: 'shp_awaguaja',
+                    transparent: true
+                  }, {
+                    opacity: 0.4
+                   } );
                 center1 = new OpenLayers.Geometry.Polygon.createRegularPolygon(pointInterestG, sizeSquare, 4, 0);
                 circleFeature1 = new OpenLayers.Feature.Vector(center1);
                 circleFeature1.style = selected_polygon_style_red;
@@ -412,6 +419,7 @@
                 map1.addLayer(vectorLayer1);
                 map1.addLayer(layerBestTile1);
                 map1.addLayer(vector1);
+                map1.addLayer(vector1a);
                 map1.setCenter(pointInterestL,13);
                 map1.addControl(new OpenLayers.Control.LayerSwitcher());
 
@@ -432,6 +440,13 @@
                   }, {
                     opacity: 0.4
                    } );
+                vector2a = new OpenLayers.Layer.WMS( "Awá-Guajá Area", infoserver, 
+                  {
+                    layers: 'shp_awaguaja',
+                    transparent: true
+                  }, {
+                    opacity: 0.4
+                   } );
                 center2 = new OpenLayers.Geometry.Polygon.createRegularPolygon(pointInterestG, sizeSquare, 4, 0);
                 circleFeature2 = new OpenLayers.Feature.Vector(center2);
                 circleFeature2.style = selected_polygon_style_blue;
@@ -440,6 +455,7 @@
                 map2.addLayer(vectorLayer2);
                 map2.addLayer(layerBestTile2);
                 map2.addLayer(vector2);
+                map2.addLayer(vector2a);
                 map2.setCenter(pointInterestL,13);
                 map2.addControl(new OpenLayers.Control.LayerSwitcher());
 
